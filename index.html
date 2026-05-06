@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adivina Trap Paisa</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700;800&display=swap');
+        :root {
+          --bg:#0b0b0b;--surface:#161616;--surface2:#1e1e1e;--surface3:#282828;
+          --accent:#1DB954;--accent-hover:#22d160;--accent-glow:rgba(29,185,84,.3);
+          --red:#e84343;--yellow:#f5a623;
+          --text:#ffffff;--text-muted:#909090;--text-dim:#505050;
+          --radius:20px;--radius-sm:12px;
+        }
+        [data-theme="purple"]{--bg:#0d0b14;--surface:#181425;--surface2:#221d35;--surface3:#2d2645;--accent:#a78bfa;--accent-hover:#b89bff;--accent-glow:rgba(167,139,250,.3);}
+        [data-theme="red"]{--bg:#130b0b;--surface:#1e1010;--surface2:#2a1414;--surface3:#361818;--accent:#e84343;--accent-hover:#ff5555;--accent-glow:rgba(232,67,67,.3);}
+        [data-theme="gold"]{--bg:#0f0d08;--surface:#1a1710;--surface2:#242018;--surface3:#302a1f;--accent:#f5a623;--accent-hover:#ffb940;--accent-glow:rgba(245,166,35,.3);}
+        [data-theme="light"]{--bg:#f0f0f0;--surface:#ffffff;--surface2:#e8e8e8;--surface3:#d8d8d8;--accent:#1DB954;--accent-hover:#22d160;--accent-glow:rgba(29,185,84,.3);--text:#0b0b0b;--text-muted:#555;--text-dim:#999;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:20px 16px 60px;background-image:radial-gradient(ellipse at 20% 0%,var(--accent-glow) 0%,transparent 60%),radial-gradient(ellipse at 80% 100%,rgba(167,139,250,.04) 0%,transparent 60%);transition:background .3s,color .3s;}
+        .wrap{max-width:520px;margin:0 auto;}
+        .header{text-align:center;padding:36px 0 28px;}
+        .logo{display:inline-flex;align-items:center;justify-content:center;width:68px;height:68px;background:var(--accent);border-radius:20px;margin-bottom:18px;box-shadow:0 0 40px var(--accent-glow);}
+        .logo svg{width:36px;height:36px;fill:#000;}
+        h1{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:1px;line-height:1;}
+        h1 span{color:var(--accent);}
+        .tagline{color:var(--text-muted);font-size:.85rem;margin-top:10px;}
+        .card{background:var(--surface);border-radius:var(--radius);padding:24px;margin-bottom:14px;border:1px solid rgba(128,128,128,.1);transition:background .3s;}
+        .login-card{text-align:center;padding:32px 28px;}
+        .artist-pills{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:14px 0 26px;min-height:36px;}
+        .pill{background:var(--surface3);color:var(--text-muted);font-size:.78rem;font-weight:700;padding:5px 14px;border-radius:50px;}
+        .field-label{text-align:left;font-size:.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+        input[type="text"],select{width:100%;padding:14px 18px;font-size:1rem;background:var(--surface2);border:1.5px solid rgba(128,128,128,.15);border-radius:var(--radius-sm);color:var(--text);outline:none;transition:border-color .2s;font-family:inherit;appearance:none;-webkit-appearance:none;}
+        input[type="text"]:focus,select:focus{border-color:var(--accent);}
+        input[type="text"]::placeholder{color:var(--text-dim);}
+        select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23606060' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:40px;}
+        select option{background:var(--surface2);}
+        .btn{width:100%;padding:15px;font-size:1rem;font-weight:700;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:all .15s;font-family:inherit;}
+        .btn:active{transform:scale(.98);}
+        .btn-green{background:var(--accent);color:#000;}
+        .btn-green:hover{background:var(--accent-hover);box-shadow:0 0 20px var(--accent-glow);}
+        .btn-outline{background:transparent;color:var(--text);border:1.5px solid rgba(128,128,128,.2);}
+        .btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+        .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+        .stat-box{background:var(--surface2);border-radius:14px;padding:14px 10px;text-align:center;border:1px solid rgba(128,128,128,.06);}
+        .stat-val{font-family:'Bebas Neue',sans-serif;font-size:1.9rem;color:var(--accent);line-height:1;display:block;margin-bottom:3px;}
+        .stat-val.fire{color:var(--yellow);}
+        .stat-lbl{font-size:.68rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px;}
+        .now-playing{min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px;text-align:center;}
+        .np-icon{font-size:2rem;margin-bottom:4px;}
+        .np-text{font-size:1rem;color:var(--text-muted);line-height:1.5;}
+        .np-answer{font-size:1.2rem;font-weight:800;color:var(--text);line-height:1.4;}
+        .np-sub{font-size:.85rem;color:var(--text-muted);}
+        .result-correct{color:var(--accent);}
+        .result-wrong{color:var(--red);}
+        .waveform{display:flex;align-items:center;gap:3px;height:28px;}
+        .wave-bar{width:4px;border-radius:4px;background:var(--accent);animation:wavePulse .8s ease-in-out infinite;}
+        .wave-bar:nth-child(1){animation-delay:0s}.wave-bar:nth-child(2){animation-delay:.1s}.wave-bar:nth-child(3){animation-delay:.2s}.wave-bar:nth-child(4){animation-delay:.3s}.wave-bar:nth-child(5){animation-delay:.4s}.wave-bar:nth-child(6){animation-delay:.15s}.wave-bar:nth-child(7){animation-delay:.25s}
+        @keyframes wavePulse{0%,100%{height:6px;opacity:.5}50%{height:24px;opacity:1}}
+        .clip-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+        .clip-btn{padding:14px 8px;background:var(--surface2);border:1.5px solid rgba(128,128,128,.12);border-radius:var(--radius-sm);color:var(--text);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;text-align:center;}
+        .clip-btn:hover{border-color:var(--accent);color:var(--accent);}
+        .clip-btn:active{transform:scale(.97);}
+        .clip-btn .clip-icon{font-size:1.1rem;display:block;margin-bottom:2px;}
+        .clip-btn .clip-lbl{font-size:.7rem;color:var(--text-muted);font-weight:600;}
+        .clip-btn:disabled{opacity:.3;cursor:not-allowed;pointer-events:none;}
+        .timer-wrap{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:14px 18px;background:var(--surface2);border-radius:var(--radius-sm);}
+        .timer-lbl{font-size:.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;}
+        .timer-val{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--accent);min-width:40px;text-align:right;}
+        .timer-val.danger{color:var(--red);animation:timerPulse .5s ease-in-out infinite alternate;}
+        @keyframes timerPulse{from{opacity:1}to{opacity:.4}}
+        .timer-bar-track{flex:1;height:4px;background:var(--surface3);border-radius:4px;margin:0 16px;overflow:hidden;}
+        .timer-bar-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .9s linear,background .3s;}
+        .guess-row{display:flex;gap:10px;}
+        .guess-row input{flex:1;}
+        .submit-btn{padding:14px 20px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#000;font-weight:700;font-size:.9rem;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .15s;}
+        .submit-btn:hover{background:var(--accent-hover);}
+        .submit-btn:active{transform:scale(.97);}
+        .filter-row{display:flex;gap:10px;align-items:center;}
+        .filter-row select{flex:1;}
+        .new-btn{padding:14px 20px;background:var(--surface2);border:1.5px solid rgba(128,128,128,.12);border-radius:var(--radius-sm);color:var(--text);font-weight:700;font-size:.85rem;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .15s;}
+        .new-btn:hover{border-color:var(--accent);color:var(--accent);}
+        .skip-btn{width:100%;padding:12px;background:transparent;border:1px solid rgba(128,128,128,.1);border-radius:var(--radius-sm);color:var(--text-dim);font-size:.85rem;cursor:pointer;font-family:inherit;transition:all .15s;margin-top:8px;}
+        .skip-btn:hover{color:var(--red);border-color:rgba(232,67,67,.3);}
+        .player-badge{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface2);border-radius:var(--radius-sm);margin-top:14px;}
+        .avatar{width:36px;height:36px;border-radius:50%;background:var(--accent);color:#000;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.9rem;flex-shrink:0;}
+        .player-name-txt{font-weight:700;font-size:.95rem;}
+        .player-mode-txt{font-size:.72rem;color:var(--text-muted);}
+        .logout-btn{margin-left:auto;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:.75rem;font-family:inherit;padding:4px 8px;}
+        .checking-badge{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;color:var(--text-muted);margin-top:10px;}
+        .checking-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:dotPulse .7s ease-in-out infinite alternate;}
+        @keyframes dotPulse{from{opacity:.2;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+        .loading-wrap{text-align:center;padding:48px 20px;}
+        .loading-wrap p{color:var(--text-muted);margin-top:14px;font-size:.9rem;}
+        .error-box{background:rgba(232,67,67,.08);border:1px solid rgba(232,67,67,.25);border-radius:var(--radius-sm);padding:12px 16px;font-size:.82rem;color:#ff8a8a;line-height:1.6;margin-bottom:14px;}
+        .error-box code{background:var(--surface3);padding:1px 7px;border-radius:4px;font-size:.8rem;color:var(--text);}
+        .hidden{display:none!important;}
+        .mode-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+        .mode-tab{padding:12px;background:var(--surface2);border:1.5px solid rgba(128,128,128,.12);border-radius:var(--radius-sm);color:var(--text-muted);font-weight:700;font-size:.85rem;cursor:pointer;font-family:inherit;transition:all .15s;text-align:center;}
+        .mode-tab.active{border-color:var(--accent);color:var(--accent);}
+        .players-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+        .player-row{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface2);border-radius:var(--radius-sm);}
+        .player-row .p-name{font-weight:700;font-size:.9rem;flex:1;}
+        .player-row .p-score{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;color:var(--accent);}
+        .player-row.active-turn{border:1.5px solid var(--accent);}
+        .turn-banner{text-align:center;padding:10px;background:rgba(128,128,128,.08);border-radius:var(--radius-sm);margin-bottom:14px;font-weight:700;color:var(--accent);font-size:.9rem;}
+        .add-player-row{display:flex;gap:8px;}
+        .add-player-row input{flex:1;}
+        .add-btn{padding:14px 16px;background:var(--surface2);border:1.5px solid rgba(128,128,128,.12);border-radius:var(--radius-sm);color:var(--text);font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;}
+        .add-btn:hover{border-color:var(--accent);color:var(--accent);}
+        .leaderboard-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;background:transparent;border:1px solid rgba(128,128,128,.1);border-radius:var(--radius-sm);color:var(--text-muted);font-size:.85rem;cursor:pointer;font-family:inherit;transition:all .15s;margin-top:8px;}
+        .leaderboard-btn:hover{color:var(--yellow);border-color:rgba(245,166,35,.3);}
+        .lb-row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:var(--radius-sm);margin-bottom:6px;background:var(--surface2);}
+        .lb-pos{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--text-dim);min-width:28px;}
+        .lb-pos.top1{color:var(--yellow);}
+        .lb-pos.top2{color:#C0C0C0;}
+        .lb-pos.top3{color:#CD7F32;}
+        .lb-name{flex:1;font-weight:700;font-size:.9rem;}
+        .lb-pct{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--accent);}
+        .lb-sub{font-size:.72rem;color:var(--text-muted);}
+        .result-podium{display:flex;flex-direction:column;gap:8px;margin:16px 0;}
+        .podium-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--radius-sm);background:var(--surface2);}
+        .podium-row.winner{border:1px solid var(--accent);}
+        .podium-medal{font-size:1.4rem;min-width:32px;text-align:center;}
+        .podium-name{flex:1;font-weight:700;}
+        .podium-score{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--accent);}
+        .fb-badge{font-size:.7rem;color:var(--text-dim);text-align:center;margin-top:6px;}
+        .fb-badge span{color:#F5820D;}
+        /* SELECTOR TEMA */
+        .theme-bar{display:flex;align-items:center;gap:8px;margin-top:14px;justify-content:center;}
+        .theme-bar span{font-size:.72rem;color:var(--text-dim);font-weight:700;text-transform:uppercase;letter-spacing:.6px;}
+        .theme-dot{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .15s,border-color .15s;}
+        .theme-dot:hover{transform:scale(1.2);}
+        .theme-dot.active{border-color:var(--text);}
+        .t-green{background:#1DB954;}.t-purple{background:#a78bfa;}.t-red{background:#e84343;}.t-gold{background:#f5a623;}.t-light{background:#e0e0e0;border-color:#bbb;}
+        /* HINT ARTISTA */
+        .hint-artist{display:inline-block;background:var(--surface3);color:var(--text-muted);font-size:.78rem;font-weight:700;padding:4px 12px;border-radius:50px;margin-top:8px;}
+    </style>
+</head>
+<body>
+<div class="wrap">
+
+    <div id="loadingScreen">
+        <div class="header">
+            <div class="logo"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>
+            <h1>Adivina<br><span>Trap Paisa</span></h1>
+        </div>
+        <div class="card loading-wrap">
+            <div class="waveform" style="justify-content:center">
+                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+            </div>
+            <p id="loadingMsg">Conectando con Drive...</p>
+        </div>
+    </div>
+
+    <div id="loginScreen" class="hidden">
+        <div class="header">
+            <div class="logo"><svg viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg></div>
+            <h1>Adivina<br><span>Trap Paisa</span></h1>
+            <p class="tagline">¿Qué tan conocedor sos del trap colombiano?</p>
+        </div>
+        <div class="card login-card">
+            <div class="artist-pills" id="artistPills"></div>
+            <div class="mode-tabs">
+                <button class="mode-tab active" onclick="setMode('solo')">🎧 Solo</button>
+                <button class="mode-tab" onclick="setMode('multi')">👥 Multijugador</button>
+            </div>
+            <div id="soloSetup">
+                <div class="field-label">Tu nombre o apodo</div>
+                <input type="text" id="nameInput" placeholder="Ej: El Duro del Trap" maxlength="20" style="margin-bottom:16px;">
+                <button class="btn btn-green" onclick="startSolo()">Empezar a jugar 🎧</button>
+            </div>
+            <div id="multiSetup" class="hidden">
+                <div class="field-label">Jugadores (2–4)</div>
+                <div class="players-list" id="playersList"></div>
+                <div class="add-player-row" style="margin-bottom:16px;">
+                    <input type="text" id="multiNameInput" placeholder="Nombre del jugador" maxlength="16">
+                    <button class="add-btn" onclick="addPlayer()">+ Agregar</button>
+                </div>
+                <div class="field-label" style="margin-bottom:8px;">Rondas por jugador</div>
+                <select id="roundsSelect" style="margin-bottom:16px;">
+                    <option value="5">5 rondas</option>
+                    <option value="10" selected>10 rondas</option>
+                    <option value="15">15 rondas</option>
+                    <option value="20">20 rondas</option>
+                </select>
+                <button class="btn btn-green" id="startMultiBtn" onclick="startMulti()" disabled>Empezar 🎮</button>
+            </div>
+            <button class="leaderboard-btn" onclick="showLeaderboard()">🏆 Tabla global de puntajes</button>
+            <div class="fb-badge">Tabla guardada en <span>Firebase</span> · datos reales 🔥</div>
+            <div class="theme-bar">
+                <span>Tema</span>
+                <div class="theme-dot t-green active" onclick="setTheme('')" title="Verde"></div>
+                <div class="theme-dot t-purple" onclick="setTheme('purple')" title="Morado"></div>
+                <div class="theme-dot t-red" onclick="setTheme('red')" title="Rojo"></div>
+                <div class="theme-dot t-gold" onclick="setTheme('gold')" title="Dorado"></div>
+                <div class="theme-dot t-light" onclick="setTheme('light')" title="Claro"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="game" class="hidden">
+        <div class="stats-grid">
+            <div class="stat-box"><span class="stat-val" id="sHits">0</span><span class="stat-lbl">Aciertos</span></div>
+            <div class="stat-box"><span class="stat-val" id="sTries">0</span><span class="stat-lbl">Intentos</span></div>
+            <div class="stat-box"><span class="stat-val" id="sPct">—</span><span class="stat-lbl">Precisión</span></div>
+            <div class="stat-box"><span class="stat-val fire" id="sStreak">0</span><span class="stat-lbl">Racha 🔥</span></div>
+        </div>
+        <div class="turn-banner hidden" id="turnBanner">Turno de —</div>
+        <div id="multiScores" class="hidden" style="margin-bottom:14px;"></div>
+        <div id="errorBox" class="error-box hidden">⚠️ No se pudo cargar: <code id="errorFile"></code></div>
+        <div class="card" style="padding:18px 20px;">
+            <div class="filter-row">
+                <select id="artistFilter"><option value="">Todos los artistas</option></select>
+                <button class="new-btn" onclick="newSong()">Nueva ▶</button>
+            </div>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden;">
+            <div class="now-playing" id="nowPlaying">
+                <div class="np-icon">🎵</div>
+                <p class="np-text">Presioná "Nueva" para comenzar</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="clip-row">
+                <button class="clip-btn" id="btn5" onclick="playClip(5)"><span class="clip-icon">⚡</span>5 seg<span class="clip-lbl">DIFÍCIL</span></button>
+                <button class="clip-btn" id="btn10" onclick="playClip(10)"><span class="clip-icon">🎧</span>10 seg<span class="clip-lbl">NORMAL</span></button>
+                <button class="clip-btn" id="btn15" onclick="playClip(15)"><span class="clip-icon">🎶</span>15 seg<span class="clip-lbl">FÁCIL</span></button>
+            </div>
+            <div class="timer-wrap">
+                <span class="timer-lbl">Tiempo</span>
+                <div class="timer-bar-track"><div class="timer-bar-fill" id="timerBar" style="width:100%"></div></div>
+                <span class="timer-val" id="timerVal">30</span>
+            </div>
+            <div class="guess-row">
+                <input type="text" id="guessInput" placeholder="¿Cuál es la canción?" onkeydown="if(event.key==='Enter')checkGuess()">
+                <button class="submit-btn" onclick="checkGuess()">✓ Adivinar</button>
+            </div>
+            <button class="skip-btn" onclick="skipSong()">Revelar respuesta / Saltar</button>
+        </div>
+        <div class="player-badge">
+            <div class="avatar" id="playerAvatar">?</div>
+            <div>
+                <div class="player-name-txt" id="playerNameTxt">—</div>
+                <div class="player-mode-txt" id="playerModeTxt">Jugador activo</div>
+            </div>
+            <button class="logout-btn" onclick="goHome()">Salir</button>
+        </div>
+    </div>
+
+    <div id="leaderboard" class="hidden">
+        <div class="header" style="padding:24px 0 16px;">
+            <h1>🏆 <span>Top Global</span></h1>
+            <p class="tagline">Los mejores del mundo — datos reales 🔥</p>
+        </div>
+        <div class="card">
+            <div id="lbList"><p style="color:var(--text-muted);text-align:center;padding:20px;">Cargando desde Firebase...</p></div>
+        </div>
+        <button class="btn btn-outline" onclick="showLogin()" style="margin-top:8px;">← Volver</button>
+    </div>
+
+    <div id="finalScreen" class="hidden">
+        <div class="header" style="padding:24px 0 16px;">
+            <h1>🎮 <span>Fin del juego</span></h1>
+        </div>
+        <div class="card">
+            <div class="result-podium" id="finalPodium"></div>
+        </div>
+        <button class="btn btn-green" onclick="showLogin()" style="margin-bottom:10px;">Jugar de nuevo</button>
+        <button class="btn btn-outline" onclick="showLeaderboard()">🏆 Ver tabla global</button>
+    </div>
+</div>
+
+<audio id="audioPlayer" preload="auto"></audio>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+    /* ── TEMA ── */
+    function setTheme(t){
+      document.documentElement.setAttribute('data-theme',t);
+      try{ localStorage.setItem('theme',t); }catch(e){}
+      document.querySelectorAll('.theme-dot').forEach(d=>d.classList.remove('active'));
+      const map={'':'t-green','purple':'t-purple','red':'t-red','gold':'t-gold','light':'t-light'};
+      document.querySelector('.'+map[t])?.classList.add('active');
+    }
+    (()=>{ try{ setTheme(localStorage.getItem('theme')||''); }catch(e){ setTheme(''); } })();
+
+    /* ── FIREBASE ── */
+    firebase.initializeApp({
+      apiKey:"AIzaSyAXpaJ6PXvllj3IapUuqKEVq-WLPRyT5eQ",
+      authDomain:"adivinaeltrap.firebaseapp.com",
+      databaseURL:"https://adivinaeltrap-default-rtdb.firebaseio.com",
+      projectId:"adivinaeltrap",
+      storageBucket:"adivinaeltrap.firebasestorage.app",
+      messagingSenderId:"411586479099",
+      appId:"1:411586479099:web:f0eb6dbd7121093bc4415e"
+    });
+    const leaderboardRef = firebase.database().ref('leaderboard');
+
+    function sanitizeKey(n){ return n.replace(/[.#$[\]/]/g,'_').substring(0,40); }
+    async function saveToLeaderboard(name,hits,tries){
+      if(!hits) return;
+      try{
+        const key=sanitizeKey(name), pct=tries?Math.round(hits/tries*100):0;
+        const snap=await leaderboardRef.child(key).get();
+        if(snap.exists()&&hits<=snap.val().hits) return;
+        await leaderboardRef.child(key).set({name,hits,tries,pct,date:new Date().toLocaleDateString('es-CO')});
+      }catch(e){ console.warn('Firebase:',e); }
+    }
+    async function showLeaderboard(){
+      showOnly('leaderboard');
+      $('lbList').innerHTML='<p style="color:var(--text-muted);text-align:center;padding:20px;">Cargando...</p>';
+      try{
+        const snap=await leaderboardRef.orderByChild('hits').limitToLast(50).get();
+        if(!snap.exists()){ $('lbList').innerHTML='<p style="color:var(--text-muted);text-align:center;padding:20px;">¡Sé el primero! 🔥</p>'; return; }
+        const board=[];
+        snap.forEach(c=>board.push(c.val()));
+        board.sort((a,b)=>b.hits-a.hits||b.pct-a.pct);
+        const pos=['top1','top2','top3'];
+        $('lbList').innerHTML=board.map((e,i)=>
+          `<div class="lb-row"><span class="lb-pos ${pos[i]||''}">${i+1}</span><div style="flex:1"><div class="lb-name">${e.name}</div><div class="lb-sub">${e.pct}% precisión · ${e.date}</div></div><span class="lb-pct">${e.hits} pts</span></div>`
+        ).join('');
+      }catch(e){ $('lbList').innerHTML='<p style="color:var(--red);text-align:center;padding:20px;">Error al cargar.</p>'; }
+    }
+
+    /* ── CONFIG ── */
+    const DRIVE_FOLDER_ID='1rEOpmRm7s8ML5debdQf1ejVF1QhuO5xr';
+    const DRIVE_API_KEY='AIzaSyC0xTy6CwOi-cPEpgCJ7lXmwDyYyF2XR6A';
+    const ANTHROPIC_KEY='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';
+    const SUPABASE_BASE='https://mjszfosawzidkvewyrdi.supabase.co/storage/v1/object/public/songs/';
+    const CLAUDE_HEADERS={'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};
+
+    /* ── METADATOS ── */
+    const METADATA={
+      "40 DE DICIEMBRE_spotdown.org.mp3":{t:"40 De Diciembre",a:"Blessd",s:20},
+      "ACEITE DE COCO_spotdown.org.mp3":{t:"Aceite De Coco",a:"Ryan Castro",s:20},
+      "BALCONCITO_spotdown.org.mp3":{t:"Balconcito",a:"Blessd",s:25},
+      "CHANDOSEO_spotdown.org.mp3":{t:"Chandoseo",a:"Blessd",s:20},
+      "CHUCHA_spotdown.org.mp3":{t:"Chucha",a:"Blessd",s:20},
+      "COSITAS_spotdown.org.mp3":{t:"Cositas",a:"Blessd",s:20},
+      "De chinga yo_spotdown.org.mp3":{t:"De Chinga Yo",a:"Ryan Castro",s:20},
+      "DÍAS GRISES 4.0 - Remix_spotdown.org.mp3":{t:"Días Grises 4.0 (Remix)",a:"Blessd",s:30},
+      "Donde No Se Ve_spotdown.org.mp3":{t:"Donde No Se Ve",a:"Blessd",s:20},
+      "El Peor Hombre Del Mundo_spotdown.org.mp3":{t:"El Peor Hombre Del Mundo",a:"Ryan Castro",s:20},
+      "Envidia_spotdown.org.mp3":{t:"Envidia",a:"Blessd",s:20},
+      "Faustino_spotdown.org.mp3":{t:"Faustino",a:"Ryan Castro",s:20},
+      "GANAS_spotdown.org.mp3":{t:"Ganas",a:"Blessd",s:20},
+      "GAZZ PRBO (Remix)_spotdown.org.mp3":{t:"Gazz Prbo (Remix)",a:"Blessd",s:25},
+      "Godfellas_spotdown.org.mp3":{t:"Godfellas",a:"Ryan Castro",s:20},
+      "JOKER_spotdown.org.mp3":{t:"Joker",a:"Blessd",s:20},
+      "Keta Humana_spotdown.org.mp3":{t:"Keta Humana",a:"Blessd",s:20},
+      "Las Piponas_spotdown.org.mp3":{t:"Las Piponas",a:"Ryan Castro",s:20},
+      "MAGIA_spotdown.org.mp3":{t:"Magia",a:"Blessd",s:20},
+      "Mano al piso_spotdown.org.mp3":{t:"Mano Al Piso",a:"Ryan Castro",s:20},
+      "MAS QUE AMIGOS_spotdown.org.mp3":{t:"Mas Que Amigos",a:"Blessd",s:20},
+      "MIL D AURA_spotdown.org.mp3":{t:"Mil D Aura",a:"Blessd",s:20},
+      "NO CAP_spotdown.org.mp3":{t:"No Cap",a:"Ryan Castro",s:20},
+      "Nos Vamos de Shopping - Remix_spotdown.org.mp3":{t:"Nos Vamos De Shopping (Remix)",a:"Ryan Castro",s:25},
+      "PAPACITO_spotdown.org.mp3":{t:"Papacito",a:"Ryan Castro",s:20},
+      "PISO 22_spotdown.org.mp3":{t:"Piso 22",a:"Blessd",s:20},
+      "Rico Todo_spotdown.org.mp3":{t:"Rico Todo",a:"Blessd",s:20},
+      "RPIÑATA_spotdown.org.mp3":{t:"Rpiñata",a:"Ryan Castro",s:20},
+      "SALVAJE_spotdown.org.mp3":{t:"Salvaje",a:"Blessd",s:20},
+      "SISAS NADA_spotdown.org.mp3":{t:"Sisas Nada",a:"Blessd",s:20},
+      "Street Life_spotdown.org.mp3":{t:"Street Life",a:"Ryan Castro",s:20},
+      "De Cine_spotdown.org.mp3":{t:"De Cine",a:"Ryan Castro",s:20},
+      "Tury Turner_spotdown.org.mp3":{t:"Tury Turner",a:"Blessd",s:20},
+      "URUS BLUE_spotdown.org.mp3":{t:"Urus Blue",a:"Ryan Castro",s:20},
+      "Vamos pa Belen 2_spotdown.org.mp3":{t:"Vamos Pa Belén 2",a:"Blessd",s:20},
+      "VISAJE_spotdown.org.mp3":{t:"Visaje",a:"Blessd",s:20},
+      "A Dos Manos_spotdown.org.mp3":{t:"A Dos Manos",a:"Ryan Castro",s:20},
+      "BABIDI_spotdown.org.mp3":{t:"Babidi",a:"Blessd",s:20},
+      "BALURDO_spotdown.org.mp3":{t:"Balurdo",a:"Blessd",s:20},
+      "Chococono_spotdown.org.mp3":{t:"Chococono",a:"Ryan Castro",s:20},
+      "COMO ASÍ_spotdown.org.mp3":{t:"Como Así",a:"Blessd",s:20},
+      "Daño Por Un Cuero_spotdown.org.mp3":{t:"Daño Por Un Cuero",a:"Ryan Castro",s:20},
+      "De Negro_spotdown.org.mp3":{t:"De Negro",a:"Blessd",s:20},
+      "DIOMEDES_spotdown.org.mp3":{t:"Diomedes",a:"Ryan Castro",s:20},
+      "DRIPPIN_spotdown.org.mp3":{t:"Drippin",a:"Blessd",s:20},
+      "ELECTROLIBONBON_spotdown.org.mp3":{t:"Electrolibonbon",a:"Ryan Castro",s:20},
+      "Esa Nena_spotdown.org.mp3":{t:"Esa Nena",a:"Blessd",s:20},
+      "Fulana_spotdown.org.mp3":{t:"Fulana",a:"Ryan Castro",s:20},
+      "Gangsters En La Disco_spotdown.org.mp3":{t:"Gangsters En La Disco",a:"Blessd",s:20},
+      "GAZZ PRBO_spotdown.org.mp3":{t:"Gazz Prbo",a:"Blessd",s:20},
+      "LA KBRA_spotdown.org.mp3":{t:"La Kbra",a:"Ryan Castro",s:20},
+      "Lora_spotdown.org.mp3":{t:"Lora",a:"Blessd",s:20},
+      "MAMELUCO_spotdown.org.mp3":{t:"Mameluco",a:"Ryan Castro",s:20},
+      "MÁS DE AHÍ_spotdown.org.mp3":{t:"Más De Ahí",a:"Blessd",s:20},
+      "Mazda_spotdown.org.mp3":{t:"Mazda",a:"Ryan Castro",s:20},
+      "NLE_spotdown.org.mp3":{t:"NLE",a:"Blessd",s:20},
+      "No Entendieron_spotdown.org.mp3":{t:"No Entendieron",a:"Ryan Castro",s:20},
+      "Otros Planes_spotdown.org.mp3":{t:"Otros Planes",a:"Blessd",s:20},
+      "Parche Tranqui_spotdown.org.mp3":{t:"Parche Tranqui",a:"Ryan Castro",s:20},
+      "Que Risaralda_spotdown.org.mp3":{t:"Que Risaralda",a:"Blessd",s:20},
+      "Robert De Niro_spotdown.org.mp3":{t:"Robert De Niro",a:"Ryan Castro",s:20},
+      "Rumores_spotdown.org.mp3":{t:"Rumores",a:"Blessd",s:20},
+      "SISAS NADA (feat. Kris R.) - Remix_spotdown.org.mp3":{t:"Sisas Nada (Remix)",a:"Blessd ft. Kris R.",s:25},
+      "Soy Yo_spotdown.org.mp3":{t:"Soy Yo",a:"Ryan Castro",s:20},
+      "The Flow's Son Black_spotdown.org.mp3":{t:"The Flow's Son Black",a:"Blessd",s:20},
+      "TRAPPHONE_spotdown.org.mp3":{t:"Trapphone",a:"Ryan Castro",s:20},
+      "Ultima Cena_spotdown.org.mp3":{t:"Última Cena",a:"Blessd",s:20},
+      "Vamos pa Belen 3_spotdown.org.mp3":{t:"Vamos Pa Belén 3",a:"Blessd",s:20},
+      "WELCOME_spotdown.org.mp3":{t:"Welcome",a:"Ryan Castro",s:20},
+      "EL DUEÑO DEL TRAP_spotdown.org.mp3":{t:"El Dueño Del Trap",a:"Blessd",s:20},
+      "KARO_spotdown.org.mp3":{t:"Karo",a:"Ryan Castro",s:20},
+      "CON GOMITAS LAS PACAS_spotdown.org.mp3":{t:"Con Gomitas Las Pacas",a:"Blessd",s:20},
+      "PHILLIES_spotdown.org.mp3":{t:"Phillies",a:"Blessd",s:20},
+      "FUISTE_spotdown.org.mp3":{t:"Fuiste",a:"Ryan Castro",s:20},
+      "YOGURCITO_spotdown.org.mp3":{t:"Yogurcito",a:"Blessd",s:20},
+      "WYA REMIX BLACK AND YELLOW (feat. iZaak & Pirlo)_spotdown.org.mp3":{t:"Wya Remix Black And Yellow",a:"Blessd ft. iZaak & Pirlo",s:25},
+      "En El Cielo_spotdown.org.mp3":{t:"En El Cielo",a:"Blessd",s:20},
+      "Angie_spotdown.org.mp3":{t:"Angie",a:"Ryan Castro",s:20},
+      "LUKAS & PODER_spotdown.org.mp3":{t:"Lukas & Poder",a:"Blessd",s:20},
+      "Extendo_spotdown.org.mp3":{t:"Extendo",a:"Blessd",s:20},
+      "Bl_spotdown.org.mp3":{t:"BL",a:"Blessd",s:20},
+      "SANGRE EN LAS NIKE_spotdown.org.mp3":{t:"Sangre En Las Nike",a:"Blessd",s:20},
+      "AYY GONO_spotdown.org.mp3":{t:"Ayy Gono",a:"Blessd",s:20},
+      "SORNERO_spotdown.org.mp3":{t:"Sornero",a:"Blessd",s:20},
+      "Las Piponas (Remix)_spotdown.org.mp3":{t:"Las Piponas (Remix)",a:"Ryan Castro",s:25},
+      "KITH - Remix_spotdown.org.mp3":{t:"Kith (Remix)",a:"Blessd",s:25},
+      "EJO PAILA_spotdown.org.mp3":{t:"Ejo Paila",a:"Blessd",s:20},
+      "TIFFANY_spotdown.org.mp3":{t:"Tiffany",a:"Ryan Castro",s:20},
+      "MPH_spotdown.org.mp3":{t:"MPH",a:"Blessd",s:20},
+      "ACEITE DE COCO (feat. Ryan Castro, De La Ghetto, Darell, Sahir, Hades66, Kris R.)_spotdown.org.mp3":{t:"Aceite De Coco (Remix)",a:"Blessd ft. Ryan Castro & más",s:25},
+      "BLANQUITA_spotdown.org.mp3":{t:"Blanquita",a:"Blessd",s:20},
+      "ITALIAN NEAS_spotdown.org.mp3":{t:"Italian Neas",a:"Blessd",s:20},
+      "Estamos Bien_spotdown.org.mp3":{t:"Estamos Bien",a:"Ryan Castro",s:20},
+      "NI X EL PUTXS_spotdown.org.mp3":{t:"Ni X El Putxs",a:"Blessd",s:20},
+      "Un Dia en Mi Barrio_spotdown.org.mp3":{t:"Un Día En Mi Barrio",a:"Blessd",s:20},
+      "Vice City_spotdown.org.mp3":{t:"Vice City",a:"Ryan Castro",s:20},
+      "Como Te Va Sin Mi_spotdown.org.mp3":{t:"Como Te Va Sin Mí",a:"Ryan Castro",s:20},
+      "Grr Paw_spotdown.org.mp3":{t:"Grr Paw",a:"Blessd",s:20},
+      "Kentucky_spotdown.org.mp3":{t:"Kentucky",a:"Blessd",s:20},
+      "CONDENADO AL EXITO III_spotdown.org.mp3":{t:"Condenado Al Éxito III",a:"Blessd",s:20},
+      "Pablo y Gonzalo_spotdown.org.mp3":{t:"Pablo Y Gonzalo",a:"Ryan Castro",s:20},
+      "ACT MI H_spotdown.org.mp3":{t:"Act Mi H",a:"Blessd",s:20},
+      "Trap De Cine_spotdown.org.mp3":{t:"Trap De Cine",a:"Ryan Castro",s:20},
+      "MEJOR DICHO_spotdown.org.mp3":{t:"Mejor Dicho",a:"Blessd",s:20},
+      "FARINA_spotdown.org.mp3":{t:"Farina",a:"Ryan Castro",s:20},
+      "Mi momento_spotdown.org.mp3":{t:"Mi Momento",a:"Blessd",s:20},
+      "MONEY-K_spotdown.org.mp3":{t:"Money-K",a:"Blessd",s:20},
+      "NEXT EPISODE_spotdown.org.mp3":{t:"Next Episode",a:"Ryan Castro",s:20},
+      "THIS IS COLOMBIA_spotdown.org.mp3":{t:"This Is Colombia",a:"Ryan Castro",s:20},
+      "AY! QUE DICHA_spotdown.org.mp3":{t:"Ay! Qué Dicha",a:"Blessd",s:20},
+      "Hasta Que El De Arriba Me Quite_spotdown.org.mp3":{t:"Hasta Que El De Arriba Me Quite",a:"Blessd",s:20},
+      "Meterlo A Estudiar_spotdown.org.mp3":{t:"Meterlo A Estudiar",a:"Blessd",s:20},
+      "MILITAR_spotdown.org.mp3":{t:"Militar",a:"Ryan Castro",s:20},
+      "SUPERSAVAYIN_spotdown.org.mp3":{t:"Supersavayin",a:"Blessd",s:20},
+      "CLICK CLACK_spotdown.org.mp3":{t:"Click Clack",a:"Blessd",s:20},
+      "YOGURCITO REMIX (feat. Kris R., ROA)_spotdown.org.mp3":{t:"Yogurcito Remix",a:"Blessd ft. Kris R. & ROA",s:25},
+      "LOS CACORROS USAN KLEIMOND_spotdown.org.mp3":{t:"Los Cacorros Usan Kleimond",a:"Blessd",s:20},
+      "PAW PAW_spotdown.org.mp3":{t:"Paw Paw",a:"Ryan Castro",s:20},
+      "¡Ay Papi!_spotdown.org.mp3":{t:"¡Ay Papi!",a:"Ryan Castro",s:20},
+      "40 DE DICIEMBRE (feat. GeezyDee, CARABIN3)_spotdown.org.mp3":{t:"40 De Diciembre (Remix)",a:"Blessd ft. GeezyDee",s:25},
+      "BOBADITA_spotdown.org.mp3":{t:"Bobadita",a:"Blessd",s:20},
+      "MAMAXITA_spotdown.org.mp3":{t:"Mamaxita",a:"Ryan Castro",s:20},
+      "Bandidas_spotdown.org.mp3":{t:"Bandidas",a:"Ryan Castro",s:20},
+      "QUITATELOTO (feat. Tury, GeezyDee, CARABIN3)_spotdown.org.mp3":{t:"Quítatelo To",a:"Blessd ft. Tury, GeezyDee",s:25},
+      "BOQUISUCIO (feat. GeezyDee, CARABIN3)_spotdown.org.mp3":{t:"Boquisucio",a:"Blessd ft. GeezyDee",s:25},
+      "QUIEN ERES TU__spotdown.org.mp3":{t:"Quién Eres Tú",a:"Ryan Castro",s:20},
+      "Me Siento Mejor_spotdown.org.mp3":{t:"Me Siento Mejor",a:"Blessd",s:20},
+      "Las Muñequitas_spotdown.org.mp3":{t:"Las Muñequitas",a:"Ryan Castro",s:20},
+      "LA PVTA FAMA_spotdown.org.mp3":{t:"La Pvta Fama",a:"Blessd",s:20},
+      "Candy_spotdown.org.mp3":{t:"Candy",a:"Ryan Castro",s:20},
+      "No forzo_spotdown.org.mp3":{t:"No Forzo",a:"Blessd",s:20},
+      "TUKI TUKI_spotdown.org.mp3":{t:"Tuki Tuki",a:"Blessd",s:20},
+      "MUSA REMIX_spotdown.org.mp3":{t:"Musa Remix",a:"Blessd",s:25},
+      "AVEMARIA_spotdown.org.mp3":{t:"Ave María",a:"Ryan Castro",s:20},
+      "PH_spotdown.org.mp3":{t:"PH",a:"Blessd",s:20},
+      "PA´ CUANDO_spotdown.org.mp3":{t:"Pa' Cuando",a:"Ryan Castro",s:20},
+      "QUÉ LÍO_spotdown.org.mp3":{t:"Qué Lío",a:"Blessd",s:20},
+    };
+
+    const SONG_TITLES_FOR_JUDGE = Object.values(METADATA).map(s=>`"${s.t}"`).join(', ');
+
+    /* ── DRIVE ── */
+    async function listDriveFiles(){
+      let files=[],pageToken='';
+      do{
+        const params=new URLSearchParams({q:`'${DRIVE_FOLDER_ID}' in parents and mimeType='audio/mpeg' and trashed=false`,key:DRIVE_API_KEY,fields:'nextPageToken,files(id,name)',pageSize:200,...(pageToken&&{pageToken})});
+        const res=await fetch(`https://www.googleapis.com/drive/v3/files?${params}`);
+        if(!res.ok) throw new Error('Drive API error '+res.status);
+        const data=await res.json();
+        files=files.concat(data.files||[]);
+        pageToken=data.nextPageToken||'';
+      }while(pageToken);
+      return files;
+    }
+    function driveAudioUrl(id){ return `https://www.googleapis.com/drive/v3/files/${id}?alt=media&key=${DRIVE_API_KEY}`; }
+    function supabaseUrl(fn){ return SUPABASE_BASE+encodeURIComponent(fn); }
+
+    /* ── INIT ── */
+    let SONGS=[];
+    async function init(){
+      setLoadingMsg('Conectando con Google Drive...');
+      let driveFiles=[];
+      try{ driveFiles=await listDriveFiles(); }
+      catch(e){ showInitError(`No se pudo leer Drive.<br><code>${e.message}</code>`); return; }
+      if(!driveFiles.length){ showInitError('La carpeta está vacía.'); return; }
+      SONGS=driveFiles.map(f=>{ const m=METADATA[f.name]; return {t:m?m.t:f.name.replace(/_spotdown\.org\.mp3$/i,'').replace(/\.mp3$/i,''),a:m?m.a:'Desconocido',s:m?m.s:20,f:f.name,id:f.id}; }).filter(s=>s.t);
+      // Pills de artistas ocultas intencionalmente
+      showLogin();
+    }
+    function setLoadingMsg(m){ $('loadingMsg').textContent=m; }
+    function showInitError(html){ $('loadingScreen').querySelector('.loading-wrap').innerHTML=`<div style="font-size:2rem;margin-bottom:12px">⚠️</div><p style="color:var(--text);font-weight:700;margin-bottom:10px">Error al cargar</p><div class="error-box" style="text-align:left">${html}</div>`; }
+
+    /* ── PANTALLAS ── */
+    const SCREENS=['loadingScreen','loginScreen','game','leaderboard','finalScreen'];
+    function showOnly(id){ SCREENS.forEach(s=>$(s).classList.add('hidden')); $(id).classList.remove('hidden'); }
+    function showLogin(){ showOnly('loginScreen'); }
+    function goHome(){ stopTimer(); audioStop(); showLogin(); }
+
+    /* ── MODO ── */
+    let gameMode='solo';
+    function setMode(m){
+      gameMode=m;
+      document.querySelectorAll('.mode-tab').forEach(t=>t.classList.remove('active'));
+      event.target.classList.add('active');
+      $('soloSetup').classList.toggle('hidden',m==='multi');
+      $('multiSetup').classList.toggle('hidden',m==='solo');
+    }
+
+    /* ── SOLO ── */
+    let user={name:'',hits:0,tries:0,streak:0,bestStreak:0};
+    function startSolo(){
+      const name=$('nameInput').value.trim();
+      if(!name){ $('nameInput').focus(); return; }
+      user={name,hits:0,tries:0,streak:0,bestStreak:0};
+      $('playerNameTxt').textContent=name; $('playerAvatar').textContent=name[0].toUpperCase();
+      $('playerModeTxt').textContent='Modo solo';
+      $('turnBanner').classList.add('hidden'); $('multiScores').classList.add('hidden');
+      fillArtistFilter(); updateStats(); showOnly('game');
+    }
+
+    /* ── MULTI ── */
+    let players=[],currentPlayer=0,totalRounds=10,currentRound=0;
+    function addPlayer(){
+      const inp=$('multiNameInput'),name=inp.value.trim();
+      if(!name||players.length>=4) return;
+      players.push({name,hits:0,tries:0,streak:0}); inp.value='';
+      renderPlayersList(); $('startMultiBtn').disabled=players.length<2;
+    }
+    function renderPlayersList(){
+      $('playersList').innerHTML=players.map((p,i)=>`<div class="player-row"><div class="avatar" style="width:32px;height:32px;font-size:.8rem;">${p.name[0].toUpperCase()}</div><span class="p-name">${p.name}</span><span style="cursor:pointer;color:var(--text-dim);font-size:.8rem;" onclick="removePlayer(${i})">✕</span></div>`).join('');
+    }
+    function removePlayer(i){ players.splice(i,1); renderPlayersList(); $('startMultiBtn').disabled=players.length<2; }
+    function startMulti(){
+      if(players.length<2) return;
+      totalRounds=parseInt($('roundsSelect').value); currentPlayer=0; currentRound=0;
+      players.forEach(p=>{p.hits=0;p.tries=0;p.streak=0;});
+      fillArtistFilter(); renderMultiScores(); updateTurnBanner();
+      $('turnBanner').classList.remove('hidden'); $('multiScores').classList.remove('hidden');
+      $('playerModeTxt').textContent=`Ronda 1 de ${totalRounds}`;
+      showOnly('game'); updateStats();
+    }
+    function renderMultiScores(){
+      $('multiScores').innerHTML=players.map((p,i)=>`<div class="player-row ${i===currentPlayer?'active-turn':''}"><div class="avatar" style="width:32px;height:32px;font-size:.8rem;background:${i===currentPlayer?'var(--accent)':'var(--surface3)'};">${p.name[0].toUpperCase()}</div><span class="p-name">${p.name}</span><span class="p-score">${p.hits}</span></div>`).join('');
+    }
+    function updateTurnBanner(){
+      const p=players[currentPlayer];
+      $('turnBanner').textContent=`🎤 Turno de ${p.name} · Ronda ${currentRound+1}/${totalRounds}`;
+      $('playerAvatar').textContent=p.name[0].toUpperCase(); $('playerNameTxt').textContent=p.name;
+    }
+    function nextTurn(){
+      currentPlayer=(currentPlayer+1)%players.length;
+      if(currentPlayer===0) currentRound++;
+      if(currentRound>=totalRounds){ endMulti(); return; }
+      updateTurnBanner(); renderMultiScores();
+      $('playerModeTxt').textContent=`Ronda ${currentRound+1} de ${totalRounds}`;
+      updateStats(); newSong();
+    }
+    function endMulti(){
+      stopTimer(); audioStop();
+      const sorted=[...players].sort((a,b)=>b.hits-a.hits);
+      const medals=['🥇','🥈','🥉','🏅'];
+      $('finalPodium').innerHTML=sorted.map((p,i)=>`<div class="podium-row ${i===0?'winner':''}"><span class="podium-medal">${medals[i]}</span><span class="podium-name">${p.name}</span><span class="podium-score">${p.hits} pts</span></div>`).join('');
+      sorted.forEach(p=>saveToLeaderboard(p.name,p.hits,p.tries));
+      showOnly('finalScreen');
+    }
+
+    /* ── AUDIO: Drive primero → Supabase fallback ── */
+    const audioEl=document.getElementById('audioPlayer');
+    const audioCache=new Map();
+    let clipTimer=null;
+
+    function audioStop(){
+      clearTimeout(clipTimer);
+      audioEl.pause();
+      audioEl.oncanplay=null;
+      audioEl.onerror=null;
+      try{ audioEl.removeAttribute('src'); audioEl.load(); }catch(e){}
+    }
+
+    function audioPlayClip(fileId,fileName,startSec,clipSecs){
+      audioStop();
+      if(!fileId&&!fileName){
+        showNP('<div class="np-icon">😔</div><p class="np-text">Archivo no encontrado.</p>');
+        stopTimer(); setClipBtns(true); isPlaying=false; return;
+      }
+      let triedSupabase=false;
+      function tryLoad(src){
+        audioEl.onerror=null; audioEl.oncanplay=null;
+        audioEl.src=src;
+        audioEl.onerror=()=>{
+          if(!triedSupabase){
+            triedSupabase=true;
+            showNP('<div class="np-icon">⏳</div><p class="np-text">Probando fuente alternativa…</p>');
+            tryLoad(supabaseUrl(fileName)); return;
+          }
+          $('errorFile').textContent=fileName; $('errorBox').classList.remove('hidden');
+          showNP('<div class="np-icon">😔</div><p class="np-text">No se pudo cargar el audio.</p>');
+          stopTimer(); setClipBtns(true); isPlaying=false;
+        };
+        audioEl.oncanplay=()=>{
+          audioEl.oncanplay=null; audioEl.onerror=null;
+          $('errorBox').classList.add('hidden');
+          audioEl.currentTime=startSec;
+          audioEl.play().catch(()=>{});
+          showNP(waveHTML(clipSecs));
+          if(!audioCache.has(fileName)&&!triedSupabase){
+            fetch(src).then(r=>r.ok?r.blob():Promise.reject()).then(b=>{audioCache.set(fileName,URL.createObjectURL(b));}).catch(()=>{});
+          }
+          clipTimer=setTimeout(()=>{
+            audioEl.pause();
+            if(isPlaying){
+              isPlaying=false;
+              showNP(`<div class="np-icon">💭</div><p class="np-text">¡Adivina! Tenés <strong style="color:var(--accent)">${timeLeft}s</strong> restantes.</p><span class="hint-artist">🎤 ${cur.a}</span>`);
+            }
+          },clipSecs*1000);
+        };
+        audioEl.load();
+      }
+      tryLoad(audioCache.has(fileName)?audioCache.get(fileName):driveAudioUrl(fileId));
+    }
+
+    function waveHTML(s){ return '<div class="waveform">'+'<div class="wave-bar"></div>'.repeat(7)+'</div>'+`<p class="np-text" style="margin-top:10px">Escuchando ${s} segundos…</p>`; }
+    function vibrate(p){ try{ navigator.vibrate?.(p); }catch(e){} }
+
+    /* ── ESTADO ── */
+    let cur=null,played=new Set(),timer=null,timeLeft=30,isPlaying=false;
+    const $=id=>document.getElementById(id);
+    function showNP(html){ $('nowPlaying').innerHTML=html; }
+    function stopTimer(){ clearInterval(timer); timer=null; }
+    function setClipBtns(en){ ['btn5','btn10','btn15'].forEach(id=>$(id).disabled=!en); }
+    function updateStats(){
+      const p=gameMode==='multi'?players[currentPlayer]:user;
+      if(!p) return;
+      $('sHits').textContent=p.hits; $('sTries').textContent=p.tries;
+      $('sStreak').textContent=p.streak;
+      $('sPct').textContent=p.tries?Math.round(p.hits/p.tries*100)+'%':'—';
+    }
+    function fillArtistFilter(){
+      const sel=$('artistFilter');
+      sel.innerHTML='<option value="">Todos los artistas</option>';
+      [...new Set(SONGS.map(s=>s.a))].sort().forEach(a=>{ const o=document.createElement('option'); o.value=o.textContent=a; sel.appendChild(o); });
+    }
+
+    /* ── NUEVA CANCIÓN ── */
+    function newSong(){
+      stopTimer(); audioStop(); isPlaying=false;
+      $('errorBox').classList.add('hidden'); setClipBtns(true);
+      const filter=$('artistFilter').value;
+      const pool=filter?SONGS.filter(s=>s.a===filter):SONGS;
+      const remaining=pool.filter(s=>!played.has(s.id));
+      if(!remaining.length) played.clear();
+      const list=remaining.length?remaining:pool;
+      cur=list[Math.floor(Math.random()*list.length)];
+      played.add(cur.id); $('guessInput').value='';
+      resetTimerUI();
+      showNP('<div class="np-icon">🎵</div><p class="np-text">Canción lista.<br>Elegí cuántos segundos escuchar.</p>');
+    }
+    function playClip(secs){
+      if(!cur){ alert('Primero presioná "Nueva"'); return; }
+      stopTimer(); audioStop(); isPlaying=true; setClipBtns(false);
+      showNP('<div class="np-icon">⏳</div><p class="np-text">Cargando audio…</p>');
+      startCountdown(30); audioPlayClip(cur.id,cur.f,cur.s,secs);
+    }
+    function resetTimerUI(){
+      timeLeft=30; $('timerVal').textContent='30';
+      $('timerVal').classList.remove('danger');
+      $('timerBar').style.cssText='width:100%;background:var(--accent)';
+    }
+    function startCountdown(max){
+      stopTimer(); timeLeft=max;
+      $('timerVal').textContent=max; $('timerVal').classList.remove('danger');
+      $('timerBar').style.cssText='width:100%;background:var(--accent)';
+      timer=setInterval(()=>{
+        timeLeft--;
+        $('timerVal').textContent=timeLeft;
+        $('timerBar').style.width=(timeLeft/max*100)+'%';
+        if(timeLeft<=10){ $('timerVal').classList.add('danger'); $('timerBar').style.background='var(--red)'; }
+        if(timeLeft<=0){
+          stopTimer(); audioStop(); isPlaying=false; vibrate([300,100,300]);
+          const p=gameMode==='multi'?players[currentPlayer]:user;
+          p.tries++; p.streak=0; updateStats(); setClipBtns(true);
+          showNP(`<div class="np-icon" style="font-size:1.8rem">⏰</div><p class="np-text result-wrong" style="font-weight:700">¡Tiempo agotado!</p><p class="np-answer">${cur.t}</p><p class="np-sub">${cur.a}</p>`);
+          if(gameMode==='multi') setTimeout(nextTurn,2500);
+        }
+      },1000);
+    }
+
+    /* ── ADIVINAR — solo título ── */
+    async function checkGuess(){
+      if(!cur) return;
+      const raw=$('guessInput').value.trim();
+      if(!raw) return;
+      stopTimer(); audioStop(); isPlaying=false;
+      showNP('<div class="np-icon" style="font-size:1.8rem">🤔</div><p class="np-text">Verificando…</p><div class="checking-badge"><div class="checking-dot"></div>Evaluando respuesta</div>');
+      $('guessInput').disabled=true;
+      let correct=quickLocalCheck(raw,cur.t);
+      try{ correct=await judgeWithClaude(raw,cur.t); }catch(e){}
+      $('guessInput').disabled=false; $('guessInput').value='';
+      const p=gameMode==='multi'?players[currentPlayer]:user;
+      p.tries++; setClipBtns(true);
+      if(correct){
+        p.hits++; p.streak++;
+        if(user&&p.streak>user.bestStreak) user.bestStreak=p.streak;
+        vibrate([80,40,80]);
+        showNP(`<div class="np-icon" style="font-size:1.8rem">✅</div><p class="np-text result-correct" style="font-weight:700">¡Correcto!</p><p class="np-answer">${cur.t}</p><p class="np-sub">${cur.a}${p.streak>1?' · Racha '+p.streak+' 🔥':''}</p>`);
+        if(gameMode==='solo') saveToLeaderboard(user.name,user.hits,user.tries);
+      } else {
+        p.streak=0; vibrate([500]);
+        showNP(`<div class="np-icon" style="font-size:1.8rem">❌</div><p class="np-text result-wrong" style="font-weight:700">Incorrecto</p><p class="np-answer">${cur.t}</p><p class="np-sub">${cur.a}</p>`);
+      }
+      updateStats();
+      if(gameMode==='multi'){ renderMultiScores(); setTimeout(nextTurn,2500); }
+    }
+
+    async function judgeWithClaude(guess,title){
+      const prompt=`Sos el juez de "Adivina Trap Paisa". El jugador debe adivinar el TÍTULO de la canción.\n\nTÍTULOS DEL CATÁLOGO: ${SONG_TITLES_FOR_JUDGE}\n\nTÍTULO CORRECTO: "${title}"\nRESPUESTA DEL JUGADOR: "${guess}"\n\nREGLAS:\n1. Aceptá si escribió el título correcto (con/sin tildes, errores leves)\n2. NO aceptes si escribió un nombre de artista\n3. NO aceptes si escribió OTRO título del catálogo\n4. NO aceptes respuestas claramente incorrectas\n\nRespondé ÚNICAMENTE: SI o NO`;
+      const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:CLAUDE_HEADERS,body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:10,messages:[{role:'user',content:prompt}]})});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data=await res.json();
+      const reply=(data.content?.[0]?.text||'').trim().toUpperCase();
+      return reply.startsWith('SI')||reply==='SÍ';
+    }
+
+    function normalize(s){ return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9\s]/g,'').trim(); }
+    function quickLocalCheck(guess,title){
+      const g=normalize(guess),t=normalize(title);
+      const ws=g.split(/\s+/).filter(w=>w.length>2);
+      return t===g||ws.some(w=>t.includes(w)&&w.length>3);
+    }
+
+    function skipSong(){
+      if(!cur) return;
+      stopTimer(); audioStop(); isPlaying=false;
+      const p=gameMode==='multi'?players[currentPlayer]:user;
+      p.tries++; p.streak=0; updateStats(); setClipBtns(true);
+      showNP(`<div class="np-icon" style="font-size:1.8rem">👀</div><p class="np-text" style="color:var(--text-muted)">La canción era:</p><p class="np-answer">${cur.t}</p><p class="np-sub">${cur.a}</p>`);
+      $('guessInput').value='';
+      if(gameMode==='multi'){ renderMultiScores(); setTimeout(nextTurn,2500); }
+    }
+
+    $('nameInput').addEventListener('keydown',e=>{ if(e.key==='Enter') startSolo(); });
+    $('multiNameInput').addEventListener('keydown',e=>{ if(e.key==='Enter') addPlayer(); });
+    init();
+</script>
+</body>
+</html>
