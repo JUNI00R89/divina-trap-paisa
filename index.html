@@ -189,6 +189,7 @@
             </div>
             <button class="leaderboard-btn" onclick="showLeaderboard()">🏆 Tabla global de puntajes</button>
             <div class="fb-badge">Tabla guardada en <span>Firebase</span> · datos reales 🔥</div>
+
             <div class="theme-bar">
                 <span>Tema</span>
                 <div class="theme-dot t-green active" onclick="setTheme('')" title="Verde"></div>
@@ -197,13 +198,17 @@
                 <div class="theme-dot t-gold" onclick="setTheme('gold')" title="Dorado"></div>
                 <div class="theme-dot t-light" onclick="setTheme('light')" title="Claro"></div>
             </div>
-            <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(128,128,128,.1);text-align:center;">
-                <span style="font-size:.7rem;color:var(--text-dim);letter-spacing:.5px;">Creado por</span>
-                <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--accent);letter-spacing:3px;line-height:1.3;">Junior</div>
-                <span style="font-size:.65rem;color:var(--text-dim);">&#169; 2025 &middot; Todos los derechos reservados</span>
+
+            <!-- PATENTE OPTIMIZADA PARA ANDROID WEBVIEW -->
+            <div style="margin: 28px 0 10px 0; padding:20px; background:var(--surface3); border-radius:16px; text-align:center; border:2px solid var(--accent); box-shadow:0 0 15px var(--accent-glow); width:100%; box-sizing:border-box;">
+                <span style="font-size:0.78rem; color:var(--text-muted); font-weight:700; letter-spacing:1px;">DESARROLLADO POR</span><br>
+                <span style="font-family:'Bebas Neue',sans-serif; font-size:2.4rem; color:var(--accent); letter-spacing:2px;">JUNIOR</span>
+                <div style="margin-top:8px; font-size:0.85rem; color:var(--text-dim);">
+                    © 2025 • Todos los derechos reservados
+                </div>
             </div>
+
         </div>
-    </div>
 
     <div id="game" class="hidden">
         <div class="stats-grid">
